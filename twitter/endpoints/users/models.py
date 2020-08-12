@@ -27,14 +27,6 @@ class TwitterUser(TwitterModel):
     withheld_scope: str
 
 
-class IDCursorList(TwitterModel):
-    ids: List[int]
-    next_cursor: int
-    next_cursor_str: str
-    previous_cursor: int
-    previous_cursor_str: str
-
-
 class UserCursorList(TwitterModel):
     users: List[TwitterUser]
     next_cursor: int

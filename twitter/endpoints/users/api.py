@@ -4,10 +4,10 @@ from twitter.api_client import TwitterRawApi
 from twitter.endpoints.users.friendship_models import FriendshipUserWithStatus
 from twitter.endpoints.users.models import (
     TwitterUser,
-    IDCursorList,
     UserCursorList,
     TwitterRelationship,
 )
+from twitter.models.cursor import IDCursorList
 from twitter.paths import PathOperation
 from twitter.utils import check_id_or_screen_name, check_ids_or_screen_names
 
