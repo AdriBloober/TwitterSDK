@@ -10,6 +10,7 @@ from twitter.endpoints.tweets.models import (
 )
 from twitter.models.cursor import IDCursorList
 from twitter.paths import PathOperation
+from twitter.utils import check_id_or_screen_name
 
 SEARCH_PATH = PathOperation("/search")
 SEARCH_TWEETS_PATH = SEARCH_PATH + "/tweets.json"
@@ -28,6 +29,9 @@ FAVORITES_PATH = PathOperation("/favorites")
 FAVORITES_CREATE_PATH = FAVORITES_PATH + "/create.json"
 FAVORITES_DESTROY_PATH = FAVORITES_PATH + "/destroy.json"
 FAVORITES_LIST_PATH = FAVORITES_PATH + "/list.json"
+HOME_TIMELINE_PATH = STATUSES_PATH + "/home_timeline.json"
+USER_TIMELINE_PATH = STATUSES_PATH + "/user_timeline.json"
+MENTIONS_TIMELINE_PATH = STATUSES_PATH + "/mentions_timeline.json"
 
 
 class TweetsApi(TwitterRawApi):
@@ -335,6 +339,7 @@ class TweetsApi(TwitterRawApi):
         max_id: int = None,
         include_entities: bool = None,
     ) -> List[TwitterStatusTweet]:
+        check_id_or_screen_name(screen_name, user_id)
         return [
             TwitterStatusTweet.from_json(TwitterStatusTweet, v)
             for v in self.full_authenticated_request(
@@ -346,6 +351,84 @@ class TweetsApi(TwitterRawApi):
                     "count": count,
                     "since_id": since_id,
                     "max_id": max_id,
+                    "include_entities": include_entities,
+                },
+            )
+        ]
+
+    def get_home_timeline(
+        self,
+        count: int = None,
+        since_id: int = None,
+        max_id: int = None,
+        trim_user: bool = None,
+        exclude_replies: bool = None,
+        include_entities: bool = None,
+    ) -> List[TwitterStatusTweet]:
+        return [
+            TwitterStatusTweet.from_json(TwitterStatusTweet, v)
+            for v in self.full_authenticated_request(
+                "GET",
+                HOME_TIMELINE_PATH,
+                params={
+                    "count": count,
+                    "since_id": since_id,
+                    "max_id": max_id,
+                    "trim_user": trim_user,
+                    "exclude_replies": exclude_replies,
+                    "include_entities": include_entities,
+                },
+            )
+        ]
+
+    def get_user_timeline(
+        self,
+        screen_name: str = None,
+        user_id: int = None,
+        since_id: int = None,
+        count: int = None,
+        max_id: int = None,
+        trim_user: bool = None,
+        exclude_replies: bool = None,
+        include_rts: bool = None,
+    ) -> List[TwitterStatusTweet]:
+        check_id_or_screen_name(screen_name, user_id)
+        return [
+            TwitterStatusTweet.from_json(TwitterStatusTweet, v)
+            for v in self.full_authenticated_request(
+                "GET",
+                USER_TIMELINE_PATH,
+                params={
+                    "user_id": user_id,
+                    "screen_name": screen_name,
+                    "since_id": since_id,
+                    "count": count,
+                    "max_id": max_id,
+                    "trim_user": trim_user,
+                    "exclude_replies": exclude_replies,
+                    "include_rts": include_rts,
+                },
+            )
+        ]
+
+    def get_mentions_timeline(
+        self,
+        count: int = None,
+        since_id: int = None,
+        max_id: int = None,
+        trim_user: bool = None,
+        include_entities: bool = None,
+    ) -> List[TwitterStatusTweet]:
+        return [
+            TwitterStatusTweet.from_json(TwitterStatusTweet, v)
+            for v in self.full_authenticated_request(
+                "GET",
+                MENTIONS_TIMELINE_PATH,
+                params={
+                    "count": count,
+                    "since_id": since_id,
+                    "max_id": max_id,
+                    "trim_user": trim_user,
                     "include_entities": include_entities,
                 },
             )
