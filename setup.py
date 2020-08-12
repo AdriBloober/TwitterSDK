@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 with open("README.md", "r") as readme_file:
     long_description = readme_file.read()
@@ -19,7 +19,7 @@ class DevelopmentStatus:
     INACTIVE = "Development Status :: 7 - Inactive"
 
 
-supported_python_versions = ["", "3", "3.6", "3.7", "3.8", "3.9"]
+supported_python_versions = ["3", "3.6", "3.7", "3.8", "3.9"]
 
 classifiers = [
     "Operating System :: OS Independent",
@@ -27,9 +27,10 @@ classifiers = [
     DevelopmentStatus.PRE_ALPHA,
     "Intended Audience :: Developers",
     "Natural Language :: English",
+    "Programming Language :: Python"
 ]
 classifiers.extend(
-    ["Programming Language :: Python " + spv for spv in supported_python_versions]
+    ["Programming Language :: Python :: " + spv for spv in supported_python_versions]
 )
 
 setup(
