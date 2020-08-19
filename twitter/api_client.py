@@ -5,6 +5,7 @@ from twitter.error_mangement import parse_error
 from twitter.paths import PathOperation
 from typing import Union
 
+
 class ApiClient:
     request_session = None
 

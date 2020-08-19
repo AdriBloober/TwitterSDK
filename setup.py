@@ -1,12 +1,33 @@
 from setuptools import setup
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
-with open("README.md", "r") as readme_file:
-    long_description = readme_file.read()
+long_description = """
+# TwitterAPI (Python)
 
-with open("requirements.txt") as f:
-    requirements = f.read().splitlines()
+## Installation
+
+This python package requires python >= 3.6 with pip.
+
+### Install with pip
+
+```shell
+python3 -m pip install --upgrade --user twitter_sdk
+```
+
+### Install manual
+
+```shell
+git clone https://github.com/AdriBloober/TwitterSDK && cd TwitterSDK
+python3 setup.py install
+```
+
+# How to use?
+
+**Go to https://github.com/AdriBloober/TwitterSDK and look there!**
+"""
+
+requirements = ["requests", "requests-oauthlib"]
 
 
 class DevelopmentStatus:
@@ -19,7 +40,7 @@ class DevelopmentStatus:
     INACTIVE = "Development Status :: 7 - Inactive"
 
 
-supported_python_versions = ["", "3", "3.6", "3.7", "3.8", "3.9"]
+supported_python_versions = ["3", "3.6", "3.7", "3.8", "3.9"]
 
 classifiers = [
     "Operating System :: OS Independent",
@@ -27,9 +48,10 @@ classifiers = [
     DevelopmentStatus.PRE_ALPHA,
     "Intended Audience :: Developers",
     "Natural Language :: English",
+    "Programming Language :: Python"
 ]
 classifiers.extend(
-    ["Programming Language :: Python " + spv for spv in supported_python_versions]
+    ["Programming Language :: Python :: " + spv for spv in supported_python_versions]
 )
 
 setup(
