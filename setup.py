@@ -1,6 +1,8 @@
-from setuptools import setup
+import os
 
-VERSION = "0.1.1"
+from setuptools import setup, find_packages
+
+VERSION = "0.1.5"
 
 long_description = """
 # TwitterAPI (Python)
@@ -26,6 +28,12 @@ python3 setup.py install
 
 **Go to https://github.com/AdriBloober/TwitterSDK and look there!**
 """
+
+if os.path.exists("README.md"):
+    with open("README.md", "r") as readme_file:
+        r = readme_file.read()
+        if r.startswith("# TwitterAPI"):
+            long_description = r
 
 requirements = ["requests", "requests-oauthlib"]
 
@@ -63,8 +71,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/AdriBloober/TwitterSDK",
-    packages=["twitter"],
+    packages=find_packages(include=["twitter", "twitter.*"]),
     classifiers=classifiers,
     python_requires=">=3.6",
-    install_requirements=requirements,
+    install_requires=requirements,
 )
