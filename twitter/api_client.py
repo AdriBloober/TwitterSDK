@@ -1,3 +1,6 @@
+from enum import Enum
+
+from requests.auth import AuthBase, HTTPBasicAuth
 from requests import Session
 from requests_oauthlib import OAuth1
 
@@ -38,20 +41,73 @@ class ApiClient:
         )
 
 
+class TwitterAuthType(Enum):
+    OAuth1 = 0
+    OAuth2_Bearer_Token = 1
+    BasicAuth = 2
+
+
+class TwitterAuth(AuthBase):
+    def __init__(self, type_of_auth: TwitterAuthType, auth):
+        self.type_of_auth = type_of_auth
+        self.auth = auth
+
+    def __call__(self, r):
+        if self.type_of_auth == TwitterAuthType.OAuth1:
+            if not type(self.auth) == OAuth1:
+                raise ValueError(
+                    "TwitterAuth.auth should be type requests_oauthlib.OAuth1!"
+                )
+            return self.auth(r)
+        elif self.type_of_auth == TwitterAuthType.OAuth2_Bearer_Token:
+            # self.auth is the bearer Token
+            if not type(self.auth) == str:
+                raise ValueError("TwitterAuth.auth should be type string!")
+            r.headers["authorization"] = "Bearer " + str(self.auth)
+            return r
+        elif self.type_of_auth == TwitterAuthType.BasicAuth:
+            if not type(self.auth) == tuple or not len(self.auth) == 2:
+                raise ValueError(
+                    "TwitterAuth.auth should be type tuple with (email_address, password)."
+                )
+            return HTTPBasicAuth(*self.auth)(r)
+        else:
+            raise ValueError(
+                f"TwitterAuth.type_of_auth {self.type_of_auth} is unknown. Please use another auth method."
+            )
+
+    @staticmethod
+    def get_oauth1_auth(
+        oauth_consumer_key, oauth_consumer_secret, oauth_token, oauth_token_secret
+    ):
+        return TwitterAuth(
+            TwitterAuthType.OAuth1,
+            OAuth1(
+                oauth_consumer_key,
+                oauth_consumer_secret,
+                oauth_token,
+                oauth_token_secret,
+            ),
+        )
+
+    @staticmethod
+    def get_oauth2_bearer_token(bearer_token):
+        return TwitterAuth(TwitterAuthType.OAuth2_Bearer_Token, bearer_token)
+
+    @staticmethod
+    def get_basic_authentication(email_address, password):
+        return TwitterAuth(TwitterAuthType.BasicAuth, (email_address, password))
+
+
 class TwitterRawApi:
     def __init__(
         self,
-        consumer_key,
-        consumer_private,
-        access_token_key,
-        access_token_secret,
+        auth: Union[TwitterAuth, AuthBase],
         basic_path="https://api.twitter.com",
         api_version="1.1",
     ):
 
-        self.auth = OAuth1(
-            consumer_key, consumer_private, access_token_key, access_token_secret
-        )
+        self.auth = auth
 
         self.client = ApiClient(basic_path=basic_path, api_version=api_version)
 

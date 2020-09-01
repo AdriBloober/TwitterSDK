@@ -19,21 +19,40 @@ python3 setup.py install
 
 ## How to use?
 
-### How to get the authentication credentials?
-
 Go here (https://developer.twitter.com/en/apps) and create a developer app. Under Tab `Keys and tokens` get you'r tokens.
 
 
+### How to get the authentication credentials? (OAuth1.0)
+
 
 ```python
-from twitter.api import TwitterApi
+from twitter.api import TwitterApi, TwitterAuth
 
 consumer_key = ""
 consumer_secret = ""
 access_token_key = ""
 access_token_secret = ""
 
-api = TwitterApi(consumer_key, consumer_secret, access_token_key, access_token_secret)
+api = TwitterApi(TwitterAuth.get_oauth1_auth(consumer_key, consumer_secret, access_token_key, access_token_secret))
+```
+
+### How to get the authentication credentials? (OAuth2-Bearer Token)
+```python
+from twitter.api import TwitterApi, TwitterAuth
+
+bearer_token = ""
+
+api = TwitterApi(TwitterAuth.get_oauth2_bearer_token(bearer_token))
+```
+
+### How to get the authentication credentials? (Basic Auth for premium & enterprise)
+```python
+from twitter.api import TwitterApi, TwitterAuth
+
+email_address = ""
+password = ""
+
+api = TwitterApi(TwitterAuth.get_basic_authentication(email_address, password))
 ```
 
 The `TwitterApi` object contains all methods.
