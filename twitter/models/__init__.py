@@ -4,7 +4,7 @@ def parse_items(v):
         for i in v:
             l.append(parse_items(i))
         return l
-    elif isinstance(v, TwitterModel):
+    elif hasattr(v, "to_json"):
         return v.to_json()
     elif type(v) == dict:
         d = {}
