@@ -1,3 +1,20 @@
+def parse_items(v):
+    if type(v) == list:
+        l = []
+        for i in v:
+            l.append(parse_items(i))
+        return l
+    elif isinstance(v, TwitterModel):
+        return v.to_json()
+    elif type(v) == dict:
+        d = {}
+        for new_k, new_v in v.items():
+            d[new_k] = parse_items(new_v)
+        return d
+    else:
+        return v
+
+
 class TwitterModel:
     __ignored_parameters__ = []
 
@@ -10,11 +27,18 @@ class TwitterModel:
         if not j:
             return model
         for k, v in annotations.items():
-            if k not in j or (hasattr(model_class, "__ignored_parameters__") and k in model_class.__ignored_parameters__):
+            if k not in j or (
+                hasattr(model_class, "__ignored_parameters__")
+                and k in model_class.__ignored_parameters__
+            ):
                 continue
             if v == model_class.__name__:
                 v = model_class
-            if hasattr(v, "__origin__") and v.__origin__ == list and hasattr(v.__args__[0], "to_json"):
+            if (
+                hasattr(v, "__origin__")
+                and v.__origin__ == list
+                and hasattr(v.__args__[0], "to_json")
+            ):
                 l = []
                 for i in j[k]:
                     l.append(TwitterModel.from_json(v.__args__[0], i))
@@ -32,18 +56,7 @@ class TwitterModel:
                 continue
             v = getattr(self, k)
             if not k.startswith("__") and not callable(v):
-                if v == list:
-                    l = []
-                    for i in v:
-                        if hasattr(i, "to_json"):
-                            l.append(i.to_json())
-                        else:
-                            l.append(i)
-                    j[k] = l
-                elif isinstance(v, TwitterModel):
-                    j[k] = v.to_json()
-                else:
-                    j[k] = v
+                j[k] = parse_items(v)
         return j
 
     def __repr__(self):
